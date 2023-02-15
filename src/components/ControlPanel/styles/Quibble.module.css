@@ -1,0 +1,23 @@
+.ctx{
+    padding: 1rem;
+}
+
+.add_btn{
+    background-color: black;
+    color: white;
+    padding: 0.5rem 2rem;
+    font-size: 1.15rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+.add_btn:hover{
+    background-color: rgb(31, 31, 31);
+}
+
+.add_btn:active{
+    transform: scale(0.99);
+}

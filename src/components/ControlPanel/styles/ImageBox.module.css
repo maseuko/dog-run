@@ -1,0 +1,31 @@
+.image_box_ctx{
+    position: relative;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    display: grid;
+    background-color: white;
+    box-shadow: 1px 1px 0px 1px black;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 1rem;
+}
+
+.remove_btn{
+    top: .5rem;
+    right: .5rem;
+    z-index: 1;
+    cursor: pointer;
+    border: none;
+    background-color: rgba(240,240,240, 0.2);
+    padding: 0 0.1rem;
+    background-color: rgb(249, 84, 84);
+    color: white;
+    width: 95%;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin: 0.2rem auto;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}

@@ -1,0 +1,66 @@
+.overlay{
+    background-color: rgba(223, 223, 223, 0.7);
+    position: fixed;
+    inset: 0 0 0 0;
+    z-index: 5;
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+}
+
+.form{
+    position: fixed;
+    inset: 0 0 0 0;
+    height: fit-content;
+    max-height: 80vh;
+    overflow-y: scroll;
+    margin: auto;
+    z-index: 6;
+    max-width: min(50rem, 87vw);
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 1px 1px 0 2px;
+}
+
+.task{
+    display: grid;
+}
+
+.task>textarea{
+    padding: 1rem;
+    min-height: 3rem;
+    box-shadow: 1px 1px 0 1px;
+    border-radius: 0.5rem;
+}
+
+.add__btn{
+    background-color: black;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 0.5rem 0;
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+}
+
+.add__btn:disabled{
+    background-color: #ccc;
+    cursor: auto;
+}
+
+.add__btn:active{
+    transform: scale(0.99);
+}
+
+.title__tag{
+    display: flex;
+    justify-content: space-between;
+}
+
+.close__btn{
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}

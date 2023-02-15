@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { RouterProvider } from "react-router-dom";
+import { QueryClientProvider } from 'react-query';
+import routes from "./routes";
+import queryClient from "./constants/query-client";
+import { useEffect } from "react";
+import { getAuthorizationCookies } from "./utils/authorization";
+import { useDispatch } from "react-redux";
+import { setTokens, setLoggedState } from "./redux/authentication";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const auth = getAuthorizationCookies();
+    if(!auth.authToken && !auth.refreshToken) return;
+    dispatch(setTokens(auth));
+    dispatch(setLoggedState(true));
+  },[dispatch]);
+
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={routes}/>
+      </QueryClientProvider>
     </div>
   );
 }

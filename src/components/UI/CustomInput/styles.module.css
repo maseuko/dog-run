@@ -1,0 +1,32 @@
+.cover{
+    display: grid;
+    margin-top: 1.5rem;
+}
+
+p{
+    color: red;
+}
+
+label{
+    font-size: 1.25rem;
+    font-weight: bolder;
+    display: flex;
+    align-items: center;
+}
+
+.input{
+    border: none;
+    border-bottom: 1.5px solid;
+    font-size: 1.35rem;
+    padding: 0.3rem;
+}
+
+.input:focus{
+    outline: none;
+}
+
+input:disabled{
+    border-color: #ccc;
+    color: #ccc;
+    user-select: none;
+}
