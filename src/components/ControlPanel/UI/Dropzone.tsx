@@ -10,9 +10,10 @@ interface props{
     updateHandler?: Function,
     multiple?: boolean,
     existingVideo?: {url: string, type: boolean}
+    style?: Object
 }
 
-const Dropzone: FunctionComponent<props> = ({textLabel, fileTypes, updateHandler, multiple, existingVideo}) => {
+const Dropzone: FunctionComponent<props> = ({textLabel, fileTypes, updateHandler, multiple, existingVideo, style}) => {
     const [dragOver, setDragOver] = useState<boolean>(false);
     const [files, setFiles] = useState<File[]>([]);
     const [urlStrings, setUrlStrings] = useState<{url: string, type: boolean}[]>(existingVideo ? [existingVideo] : []);
@@ -75,7 +76,7 @@ const Dropzone: FunctionComponent<props> = ({textLabel, fileTypes, updateHandler
 
     useEffect(() => updateHandler?.(files), [files]);
 
-    return <div className={styles.dropzone__wrapper}>
+    return <div className={styles.dropzone__wrapper} style={style}>
         <div className={styles.label}>
             {textLabel}<p>*</p>
         </div>

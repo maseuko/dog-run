@@ -1,22 +1,25 @@
 import {useState} from 'react';
 import CustomInput from "../../UI/CustomInput/CustomInput";
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import CloseIcon from '@mui/icons-material/Close';
 import styles from "../styles/AddNewCourse.module.css";
 import PopupForm from './PopupForm';
 import ResourceInterface from '../../../interfaces/resource';
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import React from 'react';
 import PreviewElement from './PreviewElement';
-import { TextField } from '@mui/material';
+import Dropzone from '../UI/Dropzone';
+
+import { addNewCourse } from '../../../requests/course';
+import ResourceList from './ResourceList';
+import { CircularProgress } from '@mui/material';
 
 const AddNewCourse = () => {
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState<{name: string, price: number}>({name: '', price: 0});
+    const [previewIcon, setPreviewIcon] = useState<File|undefined>();
     const [popupVisible, setPopupVisible] = useState<boolean>(false);
     const [resources, setResources] = useState<ResourceInterface[]>([]);
     const [previewElement, setPreviewElement] = useState<number>(-1);
     const [itemToEdit, setItemToEdit] = useState<ResourceInterface | undefined>();
-    const [reloadPreview, setReloadPreview] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [successAdded, setSuccessAdded] = useState<number>(-1);
 
     const updateFormData = (id: string, value: string) => {
         setFormData(prev => {
@@ -39,7 +42,6 @@ const AddNewCourse = () => {
     }
 
     const editHandler = (e: React.FormEvent<HTMLElement> ,idx: number)=>{
-        console.log({...resources[idx], id: idx});
         e.preventDefault();
         e.stopPropagation();
         setItemToEdit({...resources[idx], id: idx});
@@ -47,9 +49,7 @@ const AddNewCourse = () => {
     }
 
     const changePreviewElement = (idx: number) => {
-        setReloadPreview(true);
         setPreviewElement(idx);
-        setTimeout(() => setReloadPreview(false), 50);
     }
 
     const removeResource = (e: React.FormEvent<HTMLElement> ,idx: number) => {
@@ -64,6 +64,14 @@ const AddNewCourse = () => {
         }
     }
 
+    const confirmForm = async (e: React.FormEvent<HTMLElement>) => {
+        e.preventDefault();
+        setLoading(true);
+        if(!previewIcon) return;
+        await addNewCourse({name: formData.name, price: formData.price, icon: previewIcon}, resources, () => setSuccessAdded(p => p+1));
+        setLoading(false);
+    }
+
     return <>
         {popupVisible && 
             <PopupForm 
@@ -72,69 +80,38 @@ const AddNewCourse = () => {
                 editElement={itemToEdit}
             />
         }
-        <form className={styles.form_ctx}>
+        <form className={styles.form_ctx} onSubmit={confirmForm}>
             <h1 className={styles.expanded}>DODAJ NOWY KURS</h1>
-            <CustomInput id="name" changeHandler={updateFormData} textLabel="Nazwa" required/>
-            <CustomInput id="price" type="number" changeHandler={updateFormData} textLabel="Cena" required/>
-
-            <div className={styles.resource_wrapper}>
-                <h2>Zasoby</h2>
-                <div className={styles.resource_container}>
-                    {
-                        resources.map((item, idx) => {
-                            return <div 
-                                key={idx} 
-                                className={`${styles.resource_element} ${idx === previewElement && styles.selected}`} 
-                                onClick={() => changePreviewElement(idx)}>
-                                <h3>
-                                    {item.title}
-                                    <div className={`${styles.action_ctx} ${idx === previewElement && styles.selected}`}>
-                                        <button 
-                                            className={`${styles.edit_btn} ${idx === previewElement && styles.selected}`} 
-                                            onClick={(e: React.FormEvent<HTMLElement>) => editHandler(e, idx)}>
-                                                <ModeEditIcon/>
-                                        </button>
-                                        <button 
-                                            className={styles.delete_btn}
-                                            onClick={(e: React.FormEvent<HTMLElement>) => removeResource(e,idx)}
-                                        >
-                                            <CloseIcon/>
-                                        </button>
-                                    </div>
-                                </h3>
-                                <p>{item.description}</p>
-                            </div>
-                        })
-                    }
-                    <button 
-                        className={styles.resource_btn} 
-                        onClick={(e: React.FormEvent<HTMLElement>) => {e.preventDefault(); setPopupVisible(true);}}>
-                            <AddBoxIcon fontSize="large"></AddBoxIcon>
-                    </button>
-                </div>
-            </div>
-
-            <div className={styles.resource_wrapper}>
-                <h2>Podgląd</h2>
-                <div className={styles.resource_container}>
-                   {previewElement>-1 && !reloadPreview &&
-                        <PreviewElement 
-                            url={URL.createObjectURL(resources[previewElement].file || new Blob())}
-                            title={resources[previewElement].title}
-                            description={resources[previewElement].description}
-                            task={resources[previewElement].task}
-                        />
-                    }
-                </div>
-            </div>
-
-            <button className={styles.confirmation_btn}>DODAJ</button>
+            <CustomInput id="name" changeHandler={updateFormData} textLabel="Nazwa" disabled={loading} required/>
+            <CustomInput id="price" type="number" changeHandler={updateFormData} textLabel="Cena" disabled={loading} required/>
+            <Dropzone 
+                textLabel='Miniaturka' 
+                fileTypes={['jpg','png','gif','jpng']} 
+                style={{gridColumn: 'span 2'}}
+                updateHandler={(f: File[]) => setPreviewIcon(f[0])}
+            />
+            <ResourceList
+                resources={resources}
+                previewElement={previewElement}
+                changePreviewElement={changePreviewElement}
+                editHandler={editHandler}
+                removeResource={removeResource}
+                popupVisibleHandler={setPopupVisible}
+                loading={loading}
+                successAddedResources={successAdded}
+            />
+            <PreviewElement 
+                url={previewElement > -1 ? URL.createObjectURL(resources[previewElement].file || new Blob()) : ""}
+                title={previewElement > -1 ? resources[previewElement].title : ""}
+                description={previewElement > -1 ? resources[previewElement].description : ""}
+                task={previewElement > -1 ? resources[previewElement].task : ""}
+                loading={loading}
+            />
+            <button className={styles.confirmation_btn} disabled={loading}>
+                {loading ? <CircularProgress size="2rem"/> :'DODAJ'}
+            </button>
         </form>
     </>;
 }
 
 export default AddNewCourse;
-
-function updateState(arg0: {}): any {
-    throw new Error('Function not implemented.');
-}
